@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>College Table</title>
+  <style>
+    /* CSS styles for the table layout */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+
+    .featured {
+      background-color: yellow;
+    }
+
+    /* CSS styles for the scroll functionality */
+    #tableContainer {
+      height: 300px;
+      overflow-y: scroll;
+    }
+  </style>
+</head>
+<body>
+  <h1>College Table</h1>
+  
+  <div id="tableContainer">
+    <table id="collegeTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('name')">College Name</th>
+          <th onclick="sortTable('rating')">Collegedunia Rating</th>
+          <th onclick="sortTable('fees')">Fees</th>
+          <th onclick="sortTable('reviewRating')">User Review Rating</th>
+          <th>Featured</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- Table rows will be dynamically added here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    // JavaScript code for fetching and displaying college data, implementing sorting and infinite scroll
+
+    // Dummy JSON data of colleges (replace with your actual data)
+    const colleges = [
+      { name: "College A", rating: 4.5, fees: 10000, reviewRating: 4.2, featured: true },
+      { name: "College B", rating: 3.8, fees: 15000, reviewRating: 4.5, featured: false },
+      // Add more college objects as needed
+    ];
+
+    let visibleRowCount = 10; // Number of rows initially visible
+    let currentRowCount = visibleRowCount;
+
+    // Function to create a row in the table for each college
+    function createTableRow(college) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${college.name}</td>
+        <td>${college.rating}</td>
+        <td>${college.fees}</td>
+        <td>${college.reviewRating}</td>
+        <td>${college.featured ? '<span class="featured">Featured</span>' : ''}</td>
+      `;
+      return row;
+    }
+
+    // Function to display the initial rows in the table
+    function displayInitialRows() {
+      const tableBody = document.getElementById("tableBody");
+      tableBody.innerHTML = "";
+      for (let i = 0; i < visibleRowCount; i++) {
+        if (colleges[i]) {
+          const row = createTableRow(colleges[i]);
+          tableBody.appendChild(row);
+        }
+      }
+    }
+
+    // Function to add more rows to the table on scroll (infinite scroll)
+    function addMoreRows() {
+      const tableBody = document.getElementById("tableBody");
+      const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+      if (scrollTop + clientHeight >= scrollHeight) {
+        for (let i = currentRowCount; i < currentRowCount + visibleRowCount; i++) {
+          if (colleges[i]) {
+            const row = createTableRow(colleges[i]);
+            tableBody.appendChild(row);
+          }
+        }
+        currentRowCount += visibleRowCount;
+      }
+    }
+
+    // Function to sort the table based on a column
+    function sortTable(column) {
+      colleges.sort((a, b) => {
+        if (a[column] < b[column]) return -1;
+        if (a[column] > b[column]) return 1;
+        return 0;
+      });
+      displayInitialRows();
+    }
+
+    // Event listener for infinite scroll
+    window.addEventListener("scroll", addMoreRows);
+
+    // Initial setup
+    displayInitialRows();
+  </script>
+</body>
+</html>
